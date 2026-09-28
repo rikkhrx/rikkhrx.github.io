@@ -90,11 +90,13 @@ const timeline = [
   { period: "Apr 2026", title: "Data Analytics Job Simulation", org: "Deloitte, via Forage" }
 ];
 
-// Certification cards.
+// Certification cards. `image` = path to the certificate picture shown when
+// someone clicks the card (put the file inside the assets/ folder).
+// Leave image as "" if you don't have one — the card just won't be clickable.
 const certifications = [
-  { title: "Certificate of Internship — Data Analyst Intern", issuer: "Unified Mentor Pvt. Ltd." },
-  { title: "Data Analytics Job Simulation", issuer: "Deloitte, via Forage" },
-  { title: "30 Days AI-Powered Excel Micro Course", issuer: "SkillCourse" }
+  { title: "Certificate of Internship — Data Analyst Intern", issuer: "Unified Mentor Pvt. Ltd.", image: "assets/cert-internship.png" },
+  { title: "Data Analytics Job Simulation", issuer: "Deloitte, via Forage", image: "assets/cert-deloitte.png" },
+  { title: "30 Days AI-Powered Excel Micro Course", issuer: "SkillCourse", image: "assets/cert-excel.png" }
 ];
 
 
@@ -238,7 +240,9 @@ const certifications = [
     $("#modalClose").addEventListener("click", closeModal);
     $("#modalBackdrop").addEventListener("click", closeModal);
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && $("#projectModal").classList.contains("is-open")) closeModal();
+      if (e.key !== "Escape") return;
+      if ($("#certLightbox").classList.contains("is-open")) closeLightbox();
+      else if ($("#projectModal").classList.contains("is-open")) closeModal();
     });
   }
 
@@ -260,19 +264,61 @@ const certifications = [
     `).join("");
   }
 
-  /* ---------- Certifications ---------- */
+  /* ---------- Certifications + lightbox ---------- */
+  let lastCertTrigger = null;
+
   function renderCertifications(){
-    $("#certGrid").innerHTML = certifications.map(c => `
-      <div class="cert-card card">
+    $("#certGrid").innerHTML = certifications.map((c, i) => {
+      const inner = `
         <span class="cert-card__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l2.6 5.3 5.9.8-4.3 4.1 1 5.8L12 16.8 6.8 19l1-5.8-4.3-4.1 5.9-.8z"/></svg>
         </span>
         <div>
           <p class="cert-card__title">${c.title}</p>
           <p class="cert-card__issuer">${c.issuer}</p>
-        </div>
-      </div>
-    `).join("");
+          ${c.image ? '<p class="cert-card__hint">View certificate →</p>' : ""}
+        </div>`;
+      return c.image
+        ? `<button type="button" class="cert-card cert-card--clickable card" data-cert="${i}" aria-haspopup="dialog" aria-label="View certificate: ${c.title}">${inner}</button>`
+        : `<div class="cert-card card">${inner}</div>`;
+    }).join("");
+
+    $$(".cert-card--clickable").forEach(btn => {
+      btn.addEventListener("click", () => openLightbox(certifications[Number(btn.dataset.cert)], btn));
+    });
+  }
+
+  function openLightbox(cert, trigger){
+    lastCertTrigger = trigger;
+    const box = $("#certLightbox");
+    const img = $("#lightboxImg");
+    const fallback = $("#lightboxFallback");
+
+    $("#lightboxTitle").textContent = cert.title;
+    $("#lightboxIssuer").textContent = cert.issuer;
+    fallback.hidden = true;
+    img.hidden = false;
+    img.onerror = () => { img.hidden = true; fallback.hidden = false; };
+    img.alt = `Certificate: ${cert.title}`;
+    img.src = cert.image;
+
+    box.classList.add("is-open");
+    box.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    $("#lightboxClose").focus();
+  }
+
+  function closeLightbox(){
+    const box = $("#certLightbox");
+    box.classList.remove("is-open");
+    box.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (lastCertTrigger) lastCertTrigger.focus();
+  }
+
+  function wireLightbox(){
+    $("#lightboxClose").addEventListener("click", closeLightbox);
+    $("#lightboxBackdrop").addEventListener("click", closeLightbox);
   }
 
   /* ---------- Mobile nav ---------- */
@@ -388,6 +434,7 @@ const certifications = [
     renderTimeline();
     renderCertifications();
     wireModal();
+    wireLightbox();
     wireNav();
     wireForm();
     wireCursorGlow();
