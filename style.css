@@ -631,3 +631,46 @@ h1,h2,h3,h4,p{ margin:0; }
 
   .modal__panel{ padding: 30px 24px; }
 }
+
+
+/* =========================================================
+   Clickable certificates + lightbox
+   ========================================================= */
+.cert-card--clickable{
+  text-align: left; width: 100%; cursor: pointer; font: inherit; color: inherit;
+  transition: border-color .3s ease, transform .3s var(--ease);
+}
+.cert-card--clickable:hover{ border-color: var(--accent); transform: translateY(-3px); }
+.cert-card__hint{ color: var(--accent); font-family: var(--font-mono); font-size: 0.78rem; margin-top: 8px; }
+
+.lightbox{
+  position: fixed; inset: 0; z-index: 110;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+.lightbox.is-open{ opacity: 1; pointer-events: auto; }
+.lightbox__backdrop{ position: absolute; inset: 0; background: rgba(6,7,9,0.88); backdrop-filter: blur(6px); }
+.lightbox__panel{
+  position: relative; width: 100%; max-width: 900px; max-height: 92vh;
+  display: flex; flex-direction: column;
+  background: var(--surface-2); border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg); padding: 28px;
+  transform: translateY(18px) scale(.98); transition: transform .35s var(--ease);
+}
+.lightbox.is-open .lightbox__panel{ transform: translateY(0) scale(1); }
+.lightbox__panel h3{ font-family: var(--font-display); font-weight: 500; font-size: 1.25rem; padding-right: 48px; }
+.lightbox__issuer{ color: var(--text-dim); font-size: 0.9rem; margin: 4px 0 18px; }
+.lightbox__frame{
+  flex: 1; min-height: 0; overflow: auto;
+  border-radius: var(--radius-sm); background: #fff;
+  display: flex; align-items: center; justify-content: center;
+}
+.lightbox__frame img{ max-width: 100%; max-height: 72vh; width: auto; height: auto; object-fit: contain; }
+.lightbox__fallback{ color: #333; padding: 40px 20px; text-align: center; }
+
+@media (max-width: 720px){
+  .lightbox{ padding: 12px; }
+  .lightbox__panel{ padding: 20px 16px; }
+}
