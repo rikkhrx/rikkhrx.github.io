@@ -244,6 +244,22 @@
   </div>
 </div>
 
+<!-- ============ CERTIFICATE LIGHTBOX ============ -->
+<div class="lightbox" id="certLightbox" aria-hidden="true">
+  <div class="lightbox__backdrop" id="lightboxBackdrop"></div>
+  <div class="lightbox__panel" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle">
+    <button class="modal__close" id="lightboxClose" aria-label="Close certificate">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5l14 14M19 5 5 19"/></svg>
+    </button>
+    <h3 id="lightboxTitle"></h3>
+    <p class="lightbox__issuer" id="lightboxIssuer"></p>
+    <div class="lightbox__frame">
+      <img id="lightboxImg" src="" alt="" />
+      <p class="lightbox__fallback" id="lightboxFallback" hidden>Certificate image could not be loaded.</p>
+    </div>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
